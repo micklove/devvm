@@ -203,11 +203,6 @@
         state: latest
 
     # jetbrains
-    - name: Install Jetbrains Rider
-      snap:
-        name: rider
-        classic: yes
-
     - name: Install Pycharm Professional
       snap:
         name: pycharm-professional
