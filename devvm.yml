@@ -41,6 +41,7 @@
           - fzf
           - git
           - git-gui
+          - glances
           - gnupg2
           - httpie
           - jq
@@ -153,7 +154,13 @@
         - Update apt cache
     
     - meta: flush_handlers
-    
+
+    - name: Add user to the vbox shared folders group
+        user:
+          name: "{{ username }}"
+          groups: vboxsf
+          append: yes
+
     - name: Install docker
       apt:
         name: "docker-ce:{{ dpkg_architecture }}"
