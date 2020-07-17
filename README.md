@@ -31,7 +31,7 @@ sudo apt -y install git ansible
 
 3. Clone the devvm repository.
 ```
-git clone git@github.com:conclavia/devvm.git
+git clone git@github.com/micklove/devvm.git
 ```
 
 4. Run the ansible playbook
