@@ -4,6 +4,7 @@
   become: yes
   vars:
     username: "{{ lookup('env','USERNAME') }}"
+    gh_version: "0.11.0"
 
   tasks:
     # cpu architecture
@@ -118,6 +119,37 @@
 
           export PS1='\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]$(format_git_branch)\$ '
 
+    - name: gh cli
+      shell: |
+        curl "https://github.com/cli/cli/releases/download/v0.11.0/gh_{{ gh_version}}_linux_386.deb" -L -o gh_linux_386.deb
+        sudo apt install ./gh_linux_386.deb
+        rm -rf ./gh_linux_386.deb
+      args:
+        creates: /usr/local/bin/gh
+        warn: no
+      tags:
+        git
+
+    - name: install diff-so-fancy 
+      become: yes
+      become_user: "{{ username }}"
+      git:
+        repo: https://github.com/so-fancy/diff-so-fancy.git
+        dest: ~/dev/diff-so-fancy
+        accept_hostkey: true
+      tags:
+        git
+
+    - name: Create adiff-so-fancy symbolic link 
+      become: yes
+      become_user: "{{ username }}"
+      file:
+        src: ~/dev/diff-so-fancy/diff-so-fancy
+        dest: ~/.local/bin/diff-so-fancy
+        state: link
+      tags:
+        git
+        
     # aws cli
     - name: Install aws cli
       shell: |
@@ -137,9 +169,9 @@
         dest: ~/dev/env-setup
         accept_hostkey: true
       tags:
-        config
+        config   
 
-    - name: Create symbolic link 
+    - name: Create aws symbolic link 
       become: yes
       become_user: "{{ username }}"
       file:
