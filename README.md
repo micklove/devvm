@@ -44,5 +44,18 @@ ansible-playbook -K devvm.yml
 
 #### TODO
 [procmon](https://github.com/microsoft/ProcMon-for-Linux)
+
 [diffsofancy](https://github.com/so-fancy/diff-so-fancy)
 
+---
+
+## Running individual tasks
+For now, using the `tags` command to target individual tasks to run.
+```
+ansible-playbook -K devvm.yml --tags config -vvv
+```
+
+---
+
+## Useful
+[ubuntu shortcuts](https://help.ubuntu.com/stable/ubuntu-help/shell-keyboard-shortcuts.html.en)

@@ -32,6 +32,7 @@
         name:
           - apt-file
           - apt-transport-https
+          - baobab
           - bat
           - build-essential
           - ca-certificates
@@ -45,9 +46,13 @@
           - gnupg2
           - httpie
           - jq
+          - ncdu
           - neovim
           - netcat
           - net-tools
+          - network-manager-openconnect
+          - network-manager-openconnect-gnome
+          - openconnect
           - python3-pip
           # TODO: Reenable when installation bug is fixed
           #   See https://bugs.launchpad.net/ubuntu/+source/rust-bat/+bug/1868517
