@@ -44,3 +44,5 @@ ansible-playbook -K devvm.yml
 
 #### TODO
 [procmon](https://github.com/microsoft/ProcMon-for-Linux)
+[diffsofancy](https://github.com/so-fancy/diff-so-fancy)
+
