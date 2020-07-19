@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+
+
+usage(){
+  # print the error, if provided
+  if [[ ! -z "${1}" ]]
+  then
+    printf "\n =================================================================="
+    printf "\n     Error: $1"
+    printf "\n ==================================================================\n\n"
+  fi
+export SCRIPT_NAME="$(basename \"$0\")"
+cat <<EOUSAGE
+  usage:
+
+     Script [${SCRIPT_NAME}], prints the results of the last n github actions runs for the current repo
+     nb: The script defaults to using main.yml as the github actions workflows file (e.g. .github/workflows/main.yml) - use GAFILE env var to override
+
+     example usages:
+       ${SCRIPT_NAME}                          # show last n builds (n defaults to 5)
+       ${SCRIPT_NAME} -w                       # show last n builds (and open last build in browser )
+       ${SCRIPT_NAME} -c                       # show column format
+       RUNCOUNT=n ${SCRIPT_NAME}               # show n builds
+       GAFILE=pipeline.yaml ${SCRIPT_NAME}     # use pipeline.yaml as the name of the workflow file
+
+     Create alias with
+       # alias act="$0 \$*"
+EOUSAGE
+}
+
+if [[ "${1}" == "-h" || "${1}" == "--help" ]];
+then
+    usage
+    exit 0
+fi
+
+# Use main.yml as the default name when looking up GA workflows in github
+export workflow_filename=${GAFILE:=main.yml}
+
+# Default to showing the last n builds, unless the var RUNCOUNT has been set
+export run_count=${RUNCOUNT:=5}
+
+#echo "Using: RUNCOUNT [${run_count}]"
+#echo "Using: GAFILE [${workflow_filename}]"
+
+export workflow_id=$(gh api repos/:owner/:repo/actions/workflows | jq --arg workflow_filename $workflow_filename '.workflows[] | select(.path|contains($workflow_filename)).id')
+export jobs=$(gh api repos/:owner/:repo/actions/workflows/${workflow_id}/runs \
+    | jq --argjson run_count $run_count '[.workflow_runs[]|{run_number, run_id:(.id), html_url, created_at, head_branch, status, conclusion, event, author:(.head_commit.author.name), message:(.head_commit.message)}] | sort_by(.run_number) | .[-$run_count:]')
+
+# Column format
+if [[ "${1}" == "-c" ]];
+then
+  echo ${jobs} \
+      | jq -r '
+          def width:      map(keys_unsorted | map(length) | max) | max ;
+          def pad($w):    . + (($w-length)*" ") ;
+
+          . | width as $w | map(to_entries | map("\(.key|pad($w)) : \(.value)"), [""]) | .[][]
+        '
+fi
+
+# Table format
+export summarised_json=$(jq '[.[]|{num: (.run_number), conclusion, branch: (.head_branch), status, author, created_at:(.created_at |fromdateiso8601|localtime|strftime("%Y-%m-%dT%H:%M:%S %Z")), msg: (.message), url: (.html_url)}]' <<< ${jobs})
+jq . <<< ${summarised_json} \
+  | jq -r '[.[]| with_entries( .key |= ascii_downcase ) ] | (.[0] |keys_unsorted | @csv), (.[]|.|map(.) |@csv)' \
+  | column -t -s, \
+  | sed 's#\"# #g'
+
+if [[ "${1}" == "-w" ]];
+then
+    echo "-w chosen"
+
+    # TODO - use xdg-open in linux
+    open $(jq -r '.[-1].html_url' <<< ${jobs})
+fi
+
+# 1 line version
+# gh api repos/:owner/:repo/actions/workflows/$(gh api repos/:owner/:repo/actions/workflows | jq '.workflows[] | select(.path|contains("main.yml")).id')/runs \
+#  | jq '[.workflow_runs[]|{run: (.run_number), run_id:(.id), created_at, branch: (.head_branch), status, conclusion, event, author:(.head_commit.author.name), msg:(.head_commit.message), html_url}] | sort_by(.run) | .[-5:]' \
+#  | jq -r '[.[]| with_entries( .key |= ascii_downcase ) ] | (.[0] |keys_unsorted | @csv), (.[]|.|map(.) |@csv)' \
+#  | column -t -s, \
+#  | sed 's#\"# #g'
+
+on_exit() {
+  typeset RET=$?
+  usage
+  exit $RET
+}
+
+trap on_exit SIGHUP SIGINT SIGQUIT SIGILL SIGABRT SIGFPE SIGTERM

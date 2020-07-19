@@ -4,6 +4,9 @@ alias gc='git commit -m'
 alias gd="git diff -- ':!package-lock.json' ':!yarn.lock'"
 alias upgrade='sudo apt update && sudo apt -y upgrade'
 
+# Github actions script to show builds
+alias act='~/dev/devvm/home/bin/actions $*'
+
 # fzh - fuzzy search history
 # See https://github.com/junegunn/fzf/wiki/examples#command-history
 writecmd (){ perl -e 'ioctl STDOUT, 0x5412, $_ for split //, do{ chomp($_ = <>); $_ }' ; }
