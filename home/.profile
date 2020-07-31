@@ -27,5 +27,8 @@ fi
 # set AWS defaults
 export AWS_DEFAULT_REGION=ap-southeast-2
 
+#bat cat theme
+export BAT_THEME="TwoDark"
+
 # Configure fzf
 export FZF_DEFAULT_COMMAND='fdfind --type f --hidden --follow --exclude .git'
