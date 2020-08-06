@@ -4,15 +4,17 @@ Example scripts for setting up a development VM using Ansible.
 
 Includes:
 * Various Linux command-line utilities
-* AWS CLI (v2) + tooling (cfn-flip, cfn-lint, saml2aws)
+* AWS CLI (v2) + tooling (CDK, cfn-flip, cfn-lint, SAM, sceptre, saml2aws)
 * Chromium web browser
 * Docker
 * Docker Compose
+* Github CLI
+* JetBrains IDEs (pycharm, intellij, rider)
 * .NET Core
-* JetBrains IDEs
 * NodeJS (via NVM + Yarn)
 * Postman
 * Python tooling (e.g. pipenv)
+* Slack
 * Visual Studio Code
 
 Currently tested and working on Ubuntu 20.04 LTS.
@@ -45,7 +47,7 @@ ansible-playbook -K devvm.yml
 #### TODO
 [procmon](https://github.com/microsoft/ProcMon-for-Linux)
 
-[diffsofancy](https://github.com/so-fancy/diff-so-fancy)
+Configure ufw
 
 ---
 

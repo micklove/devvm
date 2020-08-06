@@ -309,6 +309,13 @@
         name: datagrip
         classic: yes
 
+    - name: Install Slack
+      snap:
+        name: slack
+        classic: yes
+      tags:
+        productivity
+
     # nodejs
     - name: Install nvm
       become: yes
@@ -318,6 +325,8 @@
       args:
         creates: ~/.nvm/nvm.sh
         warn: no
+      tags:
+        - node
 
     - name: Install node
       become: yes
@@ -326,6 +335,17 @@
         bash -c "source ~/.nvm/nvm.sh && nvm install --lts --latest-npm"
       args:
         creates: ~/.nvm/alias
+      tags:
+        - node
+
+    - name: Install AWS CDK node.js package globally (using nvm)
+      become: yes
+      become_user: "{{ username }}"
+      shell: >
+        bash -c "source ~/.nvm/nvm.sh && npm install -g aws-cdk"
+      tags:
+        - aws
+        - node
 
     # postman
     - name: Install Postman
