@@ -2,7 +2,7 @@
 	excludesfile = ~/dev/env-setup/.gitignore_global
 	
 [credential]
-       helper = cache
+       helper = store
 #
 # move around diff wiiiiith n/N
 	pager = less --tabs=4 -RFXS --pattern '^(Date|added|deleted|modified): '
