@@ -49,6 +49,7 @@
           - jq
           - keychain
           - kitty
+          - keychain
           - ncdu
           - neovim
           - netcat
@@ -130,7 +131,8 @@
           export AWS_DEFAULT_REGION=ap-southeast-2
           set -o vi
           export HISTCONTROL=ignoreboth:erasedups      # no duplicate entries (AND If you want to run a command without saving it in history, prepend it with an extra space)
-
+          export HISTSIZE=10000
+          export HISTFILESIZE=10000
           if [ -f ~/dev/config/other-aliases ]; then
               . ~/dev/config/other-aliases
           fi

@@ -49,6 +49,8 @@ ansible-playbook -K devvm.yml
 
 Configure ufw
 
+Bunyan
+
 ---
 
 ## Running individual tasks
