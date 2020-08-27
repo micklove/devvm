@@ -5,6 +5,8 @@
   vars:
     username: "{{ lookup('env','USERNAME') }}"
     gh_version: "0.11.1"
+    golang_version: 1.15
+    golang_path: /usr/local/go/bin
 
   tasks:
     # cpu architecture
@@ -145,6 +147,24 @@
             fi
           }
           export PS1='\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]$(format_git_branch)\$ '
+
+    # https://www.jeffgeerling.com/blog/2017/add-path-global-path-ansible
+    - name: Add go bin to system-wide PATH
+      copy:
+        dest: /etc/profile.d/custom-path.sh
+        content: 'PATH=$PATH:{{ golang_path }}'
+      tags:
+        golang
+
+    - name: golang
+      shell: |
+        wget -c https://dl.google.com/go/go{{ golang_version }}.linux-amd64.tar.gz -O - | sudo tar -xz -C /usr/local
+        rm -rf go${{ golang_version }}.linux-amd64.tar.gz
+      args:
+        creates: {{  golang_path }}/go
+        warn: no
+      tags:
+        golang
 
     - name: gh cli
       shell: |
