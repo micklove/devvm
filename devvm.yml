@@ -110,6 +110,16 @@
       tags:
         init
 
+    - name: Create a local go directory if it does not exist for GOPATH
+      become: yes
+      become_user: "{{ username }}"
+      file:
+        path: ~/dev/go
+        state: directory
+        mode: '0755'
+      tags:
+        golang
+
     - name: Configure local profile
       become: yes
       become_user: "{{ username }}"
@@ -152,7 +162,9 @@
     - name: Add go bin to system-wide PATH
       copy:
         dest: /etc/profile.d/custom-path.sh
-        content: 'PATH=$PATH:{{ golang_path }}'
+        content: |
+          export PATH=$PATH:'{{ golang_path }}'
+          export GOPATH=$HOME/dev/go
       tags:
         golang
 
@@ -161,7 +173,7 @@
         wget -c https://dl.google.com/go/go{{ golang_version }}.linux-amd64.tar.gz -O - | sudo tar -xz -C /usr/local
         rm -rf go${{ golang_version }}.linux-amd64.tar.gz
       args:
-        creates: {{  golang_path }}/go
+        creates: '{{  golang_path }}/go'
         warn: no
       tags:
         golang
@@ -326,6 +338,13 @@
       snap:
         name: intellij-idea-ultimate
         classic: yes
+
+    - name: Install GoLand
+      snap:
+        name: goland
+        classic: yes
+      tags:
+        golang
 
     - name: Install DataGrip
       snap:
