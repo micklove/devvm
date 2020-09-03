@@ -4,12 +4,13 @@ Example scripts for setting up a development VM using Ansible.
 
 Includes:
 * Various Linux command-line utilities
-* AWS CLI (v2) + tooling (CDK, cfn-flip, cfn-lint, SAM, sceptre, saml2aws)
+* AWS CLI (v2) + tooling (awslocal, CDK, cfn-flip, cfn-lint, SAM, sceptre, saml2aws)
 * Chromium web browser
 * Docker
 * Docker Compose
-* Github CLI
-* JetBrains IDEs (pycharm, intellij, rider)
+* Git tools, Github CLI, diff-so-fancy
+* Go, with GOPATH, etc...
+* JetBrains IDEs (GoLand, pycharm, intellij, rider)
 * .NET Core
 * NodeJS (via NVM + Yarn)
 * Postman
@@ -54,7 +55,8 @@ Bunyan
 ---
 
 ## Running individual tasks
-For now, using the `tags` command to target individual tasks to run.
+For now, using the `tags` command to target individual tasks to run. e.g. To run tasks with a `config` tag...
+
 ```
 ansible-playbook -K devvm.yml --tags config -vvv
 ```
