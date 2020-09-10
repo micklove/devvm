@@ -52,6 +52,7 @@
           - keychain
           - kitty
           - keychain
+          - maven
           - ncdu
           - neovim
           - netcat
@@ -178,6 +179,17 @@
       tags:
         golang
 
+    - name: Add maven java exports and update system-wide PATH
+      copy:
+        dest: /etc/profile.d/maven.sh
+        content: |
+          export JAVA_HOME=/usr/lib/jvm/default-java
+          export M2_HOME=/usr/share/maven
+          export MAVEN_HOME=/usr/share/maven
+          export PATH=${M2_HOME}/bin:${PATH}
+      tags:
+        java
+
     - name: gh cli
       shell: |
         curl "https://github.com/cli/cli/releases/download/v{{ gh_version}}/gh_{{ gh_version}}_linux_386.deb" -L -o gh_linux_386.deb
@@ -229,6 +241,48 @@
         accept_hostkey: true
       tags:
         config   
+
+    # sqsmover
+    - name: Check latest sqsmover version
+      shell: curl -s https://api.github.com/repos/mercury2269/sqsmover/releases/latest | jq -r .tag_name | sed s/^v//
+      register: sqsmover_latest_version
+      args:
+        warn: no
+      changed_when: false
+      tags:
+        aws-tools
+
+    - name: Check current sqsmover version
+      become: yes
+      become_user: "{{ username }}"
+      shell: sqsmover --version 2>&1 | grep version | sed -E 's/version:\s+//' || true
+      register: sqsmover_current_version
+      args:
+        warn: no
+      changed_when: false
+      tags:
+        aws-tools
+
+    - name: Install sqsmover
+      when: sqsmover_latest_version.stdout != sqsmover_current_version.stdout
+      become: yes
+      become_user: "{{ username }}"
+      shell: |
+        DOWNLOAD_URL=$( \
+          curl -s https://api.github.com/repos/mercury2269/sqsmover/releases/latest \
+          | jq -r '.assets[].browser_download_url' \
+          | grep "sqsmover_Linux_x86_64\\.tar\\.gz" \
+        )
+        FILE_NAME=$(basename ${DOWNLOAD_URL})
+        curl -O -L ${DOWNLOAD_URL}
+        rm -f ~/.local/bin/sqsmover
+        tar -xzvf ${FILE_NAME} -C ~/.local/bin
+        chmod u+x ~/.local/bin/sqsmover
+        rm -f ${FILE_NAME}
+      args:
+        warn: no
+      tags:
+        aws-tools
 
     - name: Create aws symbolic link 
       become: yes
