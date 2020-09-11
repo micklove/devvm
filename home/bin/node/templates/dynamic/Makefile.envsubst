@@ -1,0 +1,34 @@
+.DEFAULT_GOAL := build
+
+PROJECT_NAME= ?= ${PROJECT_NAME}
+PROJECT_LISTEN_PORT ?= ${PROJECT_LISTEN_PORT}
+
+-include ./lib/*.mk
+
+.DEFAULT_GOAL := help
+
+node_modules: package.json package-lock.json
+	npm install
+	touch $@
+
+.PHONY: build
+build: node_modules ## build the ${PROJECT_NAME} project
+
+.PHONY: clean
+clean: ## clean files
+	@-rm -rf dist/
+	@-rm -rf node_modules
+
+lint: ## lint project files
+	npx eslint "./**/*.{js,ts}"
+
+test: lint test-unit test-integration ## run tests
+
+test-unit:
+	npx jest --collect-coverage
+
+test-integration:
+	@echo TODO
+
+run: build ## Run the ${PROJECT_NAME} express instance
+	node ${APP_MAIN_JS}

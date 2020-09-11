@@ -1,0 +1,11 @@
+const express = require('express')
+const app = express()
+const port = process.env.PROJECT_LISTEN_PORT || ${PROJECT_LISTEN_PORT}
+
+app.get('/', (req, res) => {
+  res.send('Hello World! from ${PROJECT_NAME}')
+})
+
+app.listen(port, () => {
+  console.log(`${PROJECT_NAME} listening at http://localhost:${port}`)
+})
