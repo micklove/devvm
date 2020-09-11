@@ -42,6 +42,7 @@ create-source-folders: ## Create source folder structure
 
 apply-templates: $(PROJECT_NAME)/Makefile $(APP_MAIN_JS_GENERATED_PATH) $(GENERATED_README_PATH)
 	@cp -r templates/static/. $(PROJECT_NAME)/
+	@cp -r templates/static_src/. $(SOURCE_FOLDER_PATH)/
 
 $(PROJECT_NAME)/lib:
 	@mkdir -p $@
@@ -54,9 +55,23 @@ git-setup: create-source-folders ## Setup Git config
 		git init && \
 		popd > /dev/null
 
+update-package-json:
+	@echo "update package.json..."
+	@echo "    use esm modules, type=module property"
+	@echo "    set main property"
+	@echo "    set directories.src property"
+	cat $(PROJECT_NAME)/package.json
+
+	jq '.type="module" | .main="$(APP_MAIN_JS)" | .directories.src="$(SOURCE_FOLDER_NAME)"'  \
+		< $(PROJECT_NAME)/package.json \
+		> $(PROJECT_NAME)/package.json.tmp
+		mv $(PROJECT_NAME)/package.json.tmp $(PROJECT_NAME)/package.json
+
 $(PROJECT_NAME)/package.json:
 	@pushd $(PROJECT_NAME) > /dev/null && \
-		npm init -y
+		npm init -y && \
+		popd > /dev/null
+		$(MAKE) --no-print-directory update-package-json
 
 $(PROJECT_NAME)/node_modules: $(PROJECT_NAME)/package.json ## Setup npm project and dependencies
 	@pushd $(PROJECT_NAME) > /dev/null && \
@@ -100,7 +115,7 @@ $(APP_MAIN_JS_GENERATED_PATH): ## Generate Express js
 	PROJECT_NAME=$(PROJECT_NAME) \
 	PROJECT_LISTEN_PORT=$(PROJECT_LISTEN_PORT) \
 	envsubst '$${PROJECT_NAME} $${PROJECT_LISTEN_PORT}' \
-		< templates/dynamic/server.js.envsubst \
+		< templates/dynamic/server.envsubst.js \
 		> $@.tmp && \
 		mv $@.tmp $@
 

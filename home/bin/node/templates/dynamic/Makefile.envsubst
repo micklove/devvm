@@ -3,6 +3,7 @@
 PROJECT_NAME= ?= ${PROJECT_NAME}
 PROJECT_LISTEN_PORT ?= ${PROJECT_LISTEN_PORT}
 
+NODE_FLAGS:=--experimental-modules
 -include ./lib/*.mk
 
 .DEFAULT_GOAL := help
@@ -31,4 +32,4 @@ test-integration:
 	@echo TODO
 
 run: build ## Run the ${PROJECT_NAME} express instance
-	node ${APP_MAIN_JS}
+	node $(NODE_FLAGS) ${APP_MAIN_JS}
