@@ -13,3 +13,14 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`${PROJECT_NAME} listening at http://localhost:${port}`)
 })
+
+let validateConfig = () => {
+  let adminBasicAuthSecret = process.env.ADMIN_NOT_VERY_SECRET;
+  if (! adminBasicAuthSecret || 0 === adminBasicAuthSecret.length ) {
+    console.error("FATAL: env var ADMIN_NOT_VERY_SECRET MUST be provided, stopping ")
+    process.exit()
+  }
+
+}
+
+validateConfig()
